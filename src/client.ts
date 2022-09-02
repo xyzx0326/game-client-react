@@ -31,6 +31,10 @@ export const leaveRoom = () => {
     return defaultClient.leaveRoom()
 }
 
+export const resetAction = () => {
+    return defaultClient.resetAction()
+}
+
 export default class GameClient {
 
     private readonly url: string
@@ -97,7 +101,7 @@ export default class GameClient {
             ROOM_INFO: this.updateRoom.bind(this),
             LEAVE_PLAYER: this.updatePlayerOffline.bind(this),
             JOIN_PLAYER: this.updatePlayerOnline.bind(this),
-            RESET_ACTION: this.updatePlayerOnline.bind(this)
+            RESET_ACTION: this.resetActionResp.bind(this)
         }
 
         this.socket = new WebSocket(this.url);
@@ -136,6 +140,10 @@ export default class GameClient {
         this.room = undefined;
         this.roomId = undefined;
         clearInterval(this.timer)
+    }
+
+    resetAction() {
+        this.send(requestActions.REQUEST_ACTION);
     }
 
     private createRoom(data: Player) {
@@ -180,7 +188,7 @@ export default class GameClient {
         console.log(this)
     }
 
-    private send(type: string, data: any) {
+    private send(type: string, data?: any) {
         this.socket && this.socket.send(blobData({type, data: JSON.stringify(data)}))
     }
 
@@ -193,6 +201,12 @@ export default class GameClient {
         const callback = this.option && this.option.actionCallback;
         callback && callback(data)
     }
+
+    private resetActionResp(data: any) {
+        const callback = this.option && this.option.resetCallback;
+        callback && callback(data)
+    }
+
 }
 
 type Message<T = any> = {
@@ -205,7 +219,8 @@ export type RoomOption = {
     baseConfig?: any[],
     playerConfig?: any[][],
     configCallback?: Function,
-    actionCallback?: Function
+    actionCallback?: Function,
+    resetCallback?: Function
 }
 
 export type Room = {
