@@ -9,7 +9,9 @@ export {
     configRoom,
     sendAction,
     leaveRoom,
-    resetAction
+    resetRoom,
+    seedCreate,
+    SeedData,
 } from './client'
 
 export {useOnline} from './useOnline'

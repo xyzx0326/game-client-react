@@ -31,8 +31,12 @@ export const leaveRoom = () => {
     return defaultClient.leaveRoom()
 }
 
-export const resetAction = () => {
-    return defaultClient.resetAction()
+export const resetRoom = () => {
+    return defaultClient.resetRoom()
+}
+
+export const seedCreate = (data: SeedData) => {
+    return defaultClient.seedCreate(data)
 }
 
 export default class GameClient {
@@ -49,6 +53,7 @@ export default class GameClient {
     private listeners: Function[]
 
     private room?: Room
+    private seedMap: any = {}
 
     constructor(url: string, module: string) {
         this.url = url;
@@ -60,6 +65,10 @@ export default class GameClient {
             CacheUtils.setItem(`${module}_playerId`, playerId)
         }
         this.listeners = [];
+    }
+
+    getSeed(key: string = "main") {
+        return this.seedMap[key]
     }
 
     getRoom() {
@@ -93,6 +102,10 @@ export default class GameClient {
         })
     }
 
+    seedCreate(data: SeedData) {
+        this.send(requestActions.SEED_CREATE, data)
+    }
+
     createSocket(cb?: Function) {
         const responseActions = {
             SYNC_ACTION: this.syncAction.bind(this),
@@ -101,7 +114,8 @@ export default class GameClient {
             ROOM_INFO: this.updateRoom.bind(this),
             LEAVE_PLAYER: this.updatePlayerOffline.bind(this),
             JOIN_PLAYER: this.updatePlayerOnline.bind(this),
-            RESET_ACTION: this.resetActionResp.bind(this)
+            RESET_ACTION: this.resetActionResp.bind(this),
+            SYNC_SEED: this.syncSeed.bind(this),
         }
 
         this.socket = new WebSocket(this.url);
@@ -142,8 +156,8 @@ export default class GameClient {
         clearInterval(this.timer)
     }
 
-    resetAction() {
-        this.send(requestActions.REQUEST_ACTION);
+    resetRoom() {
+        this.send(requestActions.RESET_ROOM);
     }
 
     private createRoom(data: Player) {
@@ -162,6 +176,10 @@ export default class GameClient {
             this.configRoom()
         }
         console.log(this)
+    }
+
+    private send(type: string, data?: any) {
+        this.socket && this.socket.send(blobData({type, data: JSON.stringify(data)}))
     }
 
     private updateRoom(data: any) {
@@ -188,23 +206,28 @@ export default class GameClient {
         console.log(this)
     }
 
-    private send(type: string, data?: any) {
-        this.socket && this.socket.send(blobData({type, data: JSON.stringify(data)}))
-    }
-
+    // 同步配置
     private syncConfig(data: any) {
-        const callback = this.option && this.option.configCallback;
+        const callback = this.option && this.option.onConfig;
         callback && callback(data)
     }
 
+    // 同步动作
     private syncAction(data: any) {
-        const callback = this.option && this.option.actionCallback;
+        const callback = this.option && this.option.onAction;
         callback && callback(data)
     }
 
+    // 重置游戏
     private resetActionResp(data: any) {
-        const callback = this.option && this.option.resetCallback;
+        const callback = this.option && this.option.onReset;
         callback && callback(data)
+    }
+
+    private syncSeed(data: SeedData) {
+        this.seedMap[data.code!] = data.data
+        const callback = this.option && this.option.onSeed;
+         callback && callback(data)
     }
 
 }
@@ -215,12 +238,14 @@ type Message<T = any> = {
 }
 
 export type RoomOption = {
-    maxPlayer?: number,
-    baseConfig?: any[],
-    playerConfig?: any[][],
-    configCallback?: Function,
-    actionCallback?: Function,
-    resetCallback?: Function
+    maxPlayer?: number
+    baseConfig?: any[]
+    playerConfig?: any[][]
+
+    onConfig?: Function
+    onAction?: Function
+    onReset?: Function
+    onSeed?: Function
 }
 
 export type Room = {
@@ -230,6 +255,15 @@ export type Room = {
     myIndex: number
     playerCount: number
     players: Player[]
+}
+
+export type SeedData = {
+    code?: string
+    count?: number
+    start?: number
+    step?: number
+    result?: boolean
+    data?: number[]
 }
 
 export type Player = {
@@ -249,9 +283,11 @@ const blobData = (data: any) => {
 const requestActions = {
     ADD_ROOM: "ADD_ROOM",
     CONFIG_ROOM: "CONFIG_ROOM",
-    RESET_ACTION: "RESET_ACTION",
+    RESET_ROOM: "RESET_ROOM",
     SYNC_ACTION: "SYNC_ACTION",
     REQUEST_ACTION: "REQUEST_ACTION",
     LOCK_PLAYER: "LOCK_PLAYER",
     UNLOCK_PLAYER: "UNLOCK_PLAYER",
+    SEED_CREATE: "SEED_CREATE",
+    SEED_ALLOT: "SEED_ALLOT",
 }
