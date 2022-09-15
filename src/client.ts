@@ -114,7 +114,7 @@ export default class GameClient {
             ROOM_INFO: this.updateRoom.bind(this),
             LEAVE_PLAYER: this.updatePlayerOffline.bind(this),
             JOIN_PLAYER: this.updatePlayerOnline.bind(this),
-            RESET_ACTION: this.resetActionResp.bind(this),
+            RESET_ROOM: this.resetRoomResponse.bind(this),
             SYNC_SEED: this.syncSeed.bind(this),
         }
 
@@ -219,7 +219,7 @@ export default class GameClient {
     }
 
     // 重置游戏
-    private resetActionResp(data: any) {
+    private resetRoomResponse(data: any) {
         const callback = this.option && this.option.onReset;
         callback && callback(data)
     }
@@ -227,7 +227,7 @@ export default class GameClient {
     private syncSeed(data: SeedData) {
         this.seedMap[data.code!] = data.data
         const callback = this.option && this.option.onSeed;
-         callback && callback(data)
+        callback && callback(data)
     }
 
 }
@@ -277,7 +277,9 @@ export type Player = {
 }
 
 const blobData = (data: any) => {
-    return new Blob([JSON.stringify(data)])
+    const str = JSON.stringify(data);
+    console.log(str)
+    return new Blob([str])
 }
 
 const requestActions = {
