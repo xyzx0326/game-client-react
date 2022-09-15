@@ -41,6 +41,7 @@ export const seedCreate = (data: SeedData) => {
 
 export default class GameClient {
 
+    private debug: boolean = false
     private readonly url: string
     private readonly module: string
     private socket?: WebSocket;
@@ -128,7 +129,9 @@ export default class GameClient {
         this.socket.onmessage = (e: MessageEvent) => {
             e.data.text().then((str: string) => {
                 const data: Message = JSON.parse(str)
-                console.log(data)
+                if (this.debug){
+                    console.log(data)
+                }
                 responseActions[data.type as (keyof typeof responseActions)](data.data)
                 this.updateListener()
             })
@@ -175,11 +178,17 @@ export default class GameClient {
         if (this.room.isOwner && this.option && data.create) {
             this.configRoom()
         }
-        console.log(this)
+        if (this.debug) {
+            console.log(this)
+        }
     }
 
     private send(type: string, data?: any) {
-        this.socket && this.socket.send(blobData({type, data: JSON.stringify(data)}))
+        const value = {type, data: JSON.stringify(data)};
+        if (this.debug) {
+            console.log(value)
+        }
+        this.socket && this.socket.send(blobData(value))
     }
 
     private updateRoom(data: any) {
@@ -187,7 +196,9 @@ export default class GameClient {
             ...this.room!,
             ...data
         }
-        console.log(this)
+        if (this.debug) {
+            console.log(this)
+        }
     }
 
     private updatePlayerOnline(data: Player) {
@@ -195,7 +206,9 @@ export default class GameClient {
             this.room.players[data.index] = data
             this.room.playerCount += 1
         }
-        console.log(this)
+        if (this.debug) {
+            console.log(this)
+        }
     }
 
     private updatePlayerOffline(data: Player) {
@@ -203,7 +216,9 @@ export default class GameClient {
             this.room.players[data.index] = {} as Player
             this.room.playerCount -= 1
         }
-        console.log(this)
+        if (this.debug) {
+            console.log(this)
+        }
     }
 
     // 同步配置
@@ -242,6 +257,7 @@ export type RoomOption = {
     baseConfig?: any[]
     playerConfig?: any[][]
 
+    debug?: boolean
     onConfig?: Function
     onAction?: Function
     onReset?: Function
@@ -278,7 +294,6 @@ export type Player = {
 
 const blobData = (data: any) => {
     const str = JSON.stringify(data);
-    console.log(str)
     return new Blob([str])
 }
 
