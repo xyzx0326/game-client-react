@@ -212,9 +212,11 @@ export default class GameClient {
     }
 
     private updatePlayerOffline(data: Player) {
+        if (this.room) {
+            this.room.playerCount -= 1
+        }
         if (this.room && data.player) {
             this.room.players[data.index] = {} as Player
-            this.room.playerCount -= 1
         }
         if (this.debug) {
             console.log(this)

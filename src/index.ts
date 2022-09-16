@@ -12,6 +12,7 @@ export {
     resetRoom,
     seedCreate,
     SeedData,
+    Room
 } from './client'
 
 export {useOnline} from './useOnline'
