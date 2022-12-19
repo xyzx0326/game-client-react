@@ -7,7 +7,7 @@ export {
     getClient,
     addRoom,
     configRoom,
-    sendAction,
+    sendFrame,
     leaveRoom,
     resetRoom,
     seedCreate,

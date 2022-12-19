@@ -23,8 +23,8 @@ export const configRoom = (option: RoomOption) => {
     return defaultClient.configRoom(option);
 }
 
-export const sendAction = (data: any) => {
-    return defaultClient.sendAction(data)
+export const sendFrame = (data: any) => {
+    return defaultClient.sendFrame(data)
 }
 
 export const leaveRoom = () => {
@@ -109,7 +109,7 @@ export default class GameClient {
 
     createSocket(cb?: Function) {
         const responseActions = {
-            SYNC_ACTION: this.syncAction.bind(this),
+            SYNC_FRAME: this.syncFrame.bind(this),
             SYNC_CONFIG: this.syncConfig.bind(this),
             CONNECTED: this.createRoom.bind(this),
             ROOM_INFO: this.updateRoom.bind(this),
@@ -122,9 +122,6 @@ export default class GameClient {
         this.socket = new WebSocket(this.url);
         this.socket.onopen = () => {
             cb && cb()
-            this.timer = setInterval(() => {
-                this.send("h", {roomId: this.roomId, playerId: this.playerId})
-            }, 5000);
         };
         this.socket.onmessage = (e: MessageEvent) => {
             e.data.text().then((str: string) => {
@@ -132,7 +129,7 @@ export default class GameClient {
                 if (this.debug){
                     console.log(data)
                 }
-                responseActions[data.type as (keyof typeof responseActions)](data.data)
+                responseActions[data.type as (keyof typeof responseActions)](JSON.parse(data.data))
                 this.updateListener()
             })
         };
@@ -147,8 +144,8 @@ export default class GameClient {
         this.send(requestActions.CONFIG_ROOM, this.option);
     }
 
-    sendAction(data: any) {
-        this.send(requestActions.SYNC_ACTION, data);
+    sendFrame(data: any) {
+        this.send(requestActions.SYNC_FRAME, data);
     }
 
     leaveRoom() {
@@ -181,6 +178,9 @@ export default class GameClient {
         if (this.debug) {
             console.log(this)
         }
+        this.timer = setInterval(() => {
+            this.send("h", {roomId: this.roomId, playerId: this.playerId})
+        }, 5000);
     }
 
     private send(type: string, data?: any) {
@@ -228,8 +228,8 @@ export default class GameClient {
     }
 
     // 同步动作
-    private syncAction(data: any) {
-        const callback = this.option && this.option.onAction;
+    private syncFrame(data: any) {
+        const callback = this.option && this.option.onFrame;
         callback && callback(data)
     }
 
@@ -259,7 +259,7 @@ export type RoomOption = {
 
     debug?: boolean
     onConfig?: Function
-    onAction?: Function
+    onFrame?: Function
     onReset?: Function
     onSeed?: Function
 }
@@ -298,13 +298,13 @@ const blobData = (data: any) => {
 }
 
 const requestActions = {
-    ADD_ROOM: "ADD_ROOM",
-    CONFIG_ROOM: "CONFIG_ROOM",
-    RESET_ROOM: "RESET_ROOM",
-    SYNC_ACTION: "SYNC_ACTION",
-    REQUEST_ACTION: "REQUEST_ACTION",
-    LOCK_PLAYER: "LOCK_PLAYER",
-    UNLOCK_PLAYER: "UNLOCK_PLAYER",
-    SEED_CREATE: "SEED_CREATE",
-    SEED_ALLOT: "SEED_ALLOT",
+    ADD_ROOM: "room.add",
+    CONFIG_ROOM: "room.config",
+    RESET_ROOM: "room.reset",
+    SYNC_FRAME: "room.frame.sync",
+    REQUEST_FRAME: "room.frame.request",
+    LOCK_SEAT: "room.seat.lock",
+    UNLOCK_SEAT: "room.seat.unlock",
+    SEED_CREATE: "room.seed.create",
+    SEED_ALLOT: "room.seed.allot",
 }
