@@ -163,16 +163,17 @@ export default class GameClient {
     private createRoom(data: Player) {
         this.room = {
             id: data.id,
+            playerId: data.id,
             isOwner: data.owner,
             isPlayer: data.player,
             myIndex: data.index,
             playerCount: 1,
             players: [data]
         }
-        while (this.option && this.room.players.length < this.option.maxPlayer!) {
-            this.room.players.push({} as Player)
+        while (this.option && this.room!.players.length < this.option.maxPlayer!) {
+            this.room!.players.push({} as Player)
         }
-        if (this.room.isOwner && this.option && data.create) {
+        if (this.room!.isOwner && this.option && data.create) {
             this.configRoom()
         }
         if (this.debug) {
@@ -266,6 +267,7 @@ export type RoomOption = {
 
 export type Room = {
     id: string
+    playerId:string
     isOwner: boolean
     isPlayer: boolean
     myIndex: number
@@ -290,6 +292,7 @@ export type Player = {
     player: boolean
     online: boolean
     create?: boolean
+    configList?: string[]
 }
 
 const blobData = (data: any) => {

@@ -12,6 +12,7 @@ export {
     resetRoom,
     seedCreate,
     SeedData,
+    Player,
     Room
 } from './client'
 
