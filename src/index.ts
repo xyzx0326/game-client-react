@@ -15,5 +15,3 @@ export {
     Player,
     Room
 } from './client'
-
-export {useOnline} from './useOnline'
