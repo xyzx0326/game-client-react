@@ -126,10 +126,10 @@ export default class GameClient {
         this.socket.onmessage = (e: MessageEvent) => {
             e.data.text().then((str: string) => {
                 const data: Message = JSON.parse(str)
-                if (this.debug){
+                if (this.debug) {
                     console.log(data)
                 }
-                responseActions[data.type as (keyof typeof responseActions)](JSON.parse(data.data))
+                responseActions[data.type as (keyof typeof responseActions)](JSON.parse(data.data ?? "{}"))
                 this.updateListener()
             })
         };
@@ -267,7 +267,7 @@ export type RoomOption = {
 
 export type Room = {
     id: string
-    playerId:string
+    playerId: string
     isOwner: boolean
     isPlayer: boolean
     myIndex: number
