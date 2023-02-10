@@ -1,6 +1,6 @@
 {
   "name": "@illuxiza/one-client",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "lib/index.js",
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
