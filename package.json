@@ -1,6 +1,6 @@
 {
   "name": "@illuxiza/one-client",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "lib/index.js",
   "module": "esm/index.js",
   "types": "lib/index.d.ts",
@@ -24,7 +24,7 @@
     "build:cjs": "tsc",
     "build:es": "tsc -m esNext --outDir esm",
     "build": "npm run build:cjs && npm run build:es",
-    "bundle" : "node ./script/bundle.js",
+    "bundle": "node ./script/bundle.js",
     "publish": "npm publish ./bundle",
     "one": "npm run build && npm run bundle && npm run publish",
     "test": "ts-node test/test.ts"
