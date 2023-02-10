@@ -79,6 +79,10 @@ export default class GameClient {
 
     setOption(option: RoomOption) {
         this.option = {...this.option, ...option}
+        console.log(option);
+        if (option.debug) {
+            this.debug = option.debug
+        }
     }
 
     setListener(listener: Function) {
@@ -186,8 +190,8 @@ export default class GameClient {
     }
 
     private send(type: string, data?: any) {
-        const value = {type, data: JSON.stringify(data)};
-        if (this.debug) {
+        const value = {type, data: JSON.stringify(data), timestamp: new Date().getTime()};
+        if (this.debug && value.type !== "h") {
             console.log(value)
         }
         this.socket && this.socket.send(blobData(value))
