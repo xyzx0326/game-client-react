@@ -1,0 +1,12 @@
+{
+  "name": "@illuxiza/one-client",
+  "version": "0.0.3",
+  "private": false,
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
+  "dependencies": {
+    "nanoid": "^4.0.0"
+  }
+}

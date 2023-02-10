@@ -6,7 +6,9 @@ let defaultClient: GameClient;
 export const configClient = (url: string, option?: RoomOption, module: string = 'default') => {
     if (!defaultClient) {
         defaultClient = new GameClient(url, module)
-        option && defaultClient.setOption(option)
+        option = option ?? {}
+        option = {...option, module}
+        defaultClient.setOption(option)
     }
     return defaultClient;
 }
@@ -255,6 +257,8 @@ type Message<T = any> = {
 
 export type RoomOption = {
     maxPlayer?: number
+    module?: string
+    tags?: string[]
     baseConfig?: any[]
     playerConfig?: any[][]
 
