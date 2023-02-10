@@ -7,8 +7,7 @@ export const configClient = (url: string, option?: RoomOption, module: string = 
     if (!defaultClient) {
         defaultClient = new GameClient(url, module)
         option = option ?? {}
-        option = {...option, module}
-        defaultClient.setOption(option)
+        defaultClient.setOption({...option, module})
     }
     return defaultClient;
 }

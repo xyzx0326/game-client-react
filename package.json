@@ -24,7 +24,9 @@
     "build:cjs": "tsc",
     "build:es": "tsc -m esNext --outDir esm",
     "build": "npm run build:cjs && npm run build:es",
-    "publish": "node ./script/bundle.js && npm publish ./bundle",
+    "bundle" : "node ./script/bundle.js",
+    "publish": "npm publish ./bundle",
+    "one": "npm run build && npm run bundle && npm run publish",
     "test": "ts-node test/test.ts"
   }
 }

@@ -9,5 +9,7 @@ fs.rm('./bundle', {recursive: true}, function () {
     fs.cpSync('./esm', './bundle', {recursive: true})
     // fs.cpSync('./lib', './bundle', {recursive: true})
     fs.cpSync('./script/package.json', './bundle/package.json')
+    fs.rmdirSync('./esm', {recursive: true})
+    fs.rmdirSync('./lib', {recursive: true})
 })
 
