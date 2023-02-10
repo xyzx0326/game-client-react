@@ -3,7 +3,7 @@ const process = require('child_process')
 process.execSync('npm version patch --no-git-tag-version')
 // process.execSync('npm version minor')
 // process.execSync('npm version major')
-process.execSync('cd ./script && npm version version patch --no-git-tag-version')
+process.execSync('cd ./script && npm version patch --no-git-tag-version')
 fs.rm('./bundle', {recursive: true}, function () {
     fs.mkdirSync('./bundle')
     fs.cpSync('./esm', './bundle', {recursive: true})
